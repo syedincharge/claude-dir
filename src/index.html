@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        body {font-family: system-ui, sans-serif; max-width: 360px; margin: 4rem auto; }
+        h1 {font-size: 2rem; margin-bottom: 1rem;}
+        .row {display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem;}
+        input, select, button {font-size: 1rem; padding: 0.5rem}
+        input {width: 5rem;}
+        #result {font-weight: bold; font-size: 1.25rem; margin-top: 1rem;}
+        .error {color: red; font-weight: bold; margin-top: 1rem;}
+    </style>
+</head>
+<body>
+    <h1>Calculator</h1>
+    <div class="row">
+        <input type="number" id="num1" placeholder="Number 1">
+        <select id="operation">
+            <option value="add">+</option>
+            <option value="subtract">-</option>
+            <option value="multiply">*</option>
+            <option value="divide">/</option>
+            <option value="modulo">%</option>
+        </select>
+        <input type="number" id="num2" placeholder="Number 2">
+        <button id="calculate">Calculate</button>
+    </div>
+    <div id="result" role="status" aria-live="polite"></div>
+    <div class="error" id="error" role="alert" aria-live="assertive"></div>
+
+    <script src="calculator.js"></script>
+    <script>
+        const num1Input = document.getElementById('num1');
+        const num2Input = document.getElementById('num2');
+        const operationSelect = document.getElementById('operation');
+        const calculateButton = document.getElementById('calculate');
+        const resultDiv = document.getElementById('result');
+        const errorDiv = document.getElementById('error');
+
+        const SYMBOLS = { add: '+', subtract: '-', multiply: '*', divide: '/', modulo: '%' };
+
+        // calculator.run takes the same `<operation> <a> <b>` argument list as the
+        // CLI, so the page reuses its parsing and TypeError/RangeError behavior.
+        function calculate() {
+            const operation = operationSelect.value;
+            resultDiv.textContent = '';
+            errorDiv.textContent = '';
+
+            try {
+                const answer = calculator.run([operation, num1Input.value, num2Input.value]);
+                resultDiv.textContent =
+                    `${num1Input.value} ${SYMBOLS[operation]} ${num2Input.value} = ${answer}`;
+            } catch (error) {
+                errorDiv.textContent = `${error.name}: ${error.message}`;
+            }
+        }
+
+        calculateButton.addEventListener('click', calculate);
+
+        for (const input of [num1Input, num2Input]) {
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    calculate();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
